@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -109,6 +111,8 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
     private boolean mIsScanning;
 
     private SurfaceTexture mPreviewTexture;
+
+    private long mStartRecordTime;
 
     Camera1(Callback callback, PreviewImpl preview) {
         super(callback, preview);
@@ -479,6 +483,16 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             try {
                 mMediaRecorder.prepare();
                 mMediaRecorder.start();
+
+                mStartRecordTime = System.currentTimeMillis();
+                ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+                exec.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallback.onCameraUpdated((int) (System.currentTimeMillis() - mStartRecordTime));
+                    }
+                }, 0, 100L, TimeUnit.MILLISECONDS);
+
                 mIsRecording = true;
                 return true;
             } catch (IOException e) {

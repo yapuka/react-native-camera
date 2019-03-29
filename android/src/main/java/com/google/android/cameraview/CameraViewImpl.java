@@ -124,6 +124,8 @@ abstract class CameraViewImpl {
         void onFramePreview(byte[] data, int width, int height, int orientation);
 
         void onMountError();
+
+        void onCameraUpdated(long currentTime);
     }
 
 }

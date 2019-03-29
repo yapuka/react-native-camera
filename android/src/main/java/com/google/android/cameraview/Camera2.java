@@ -50,6 +50,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("MissingPermission")
 @TargetApi(21)
@@ -246,6 +248,8 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     private Surface mPreviewSurface;
 
     private Rect mInitialCropRegion;
+
+    private long mStartRecordTime;
 
     Camera2(Callback callback, PreviewImpl preview, Context context) {
         super(callback, preview);
@@ -499,6 +503,14 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                 mCamera.createCaptureSession(Arrays.asList(surface, mMediaRecorderSurface),
                     mSessionCallback, null);
                 mMediaRecorder.start();
+                mStartRecordTime = System.currentTimeMillis();
+                ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+                exec.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCallback.onCameraUpdated((int) (System.currentTimeMillis() - mStartRecordTime));
+                    }
+                }, 0, 100L, TimeUnit.MILLISECONDS);
                 mIsRecording = true;
                 return true;
             } catch (CameraAccessException | IOException e) {

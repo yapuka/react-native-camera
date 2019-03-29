@@ -81,6 +81,11 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
       }
 
       @Override
+      public void onCameraUpdated(final CameraView cameraView, final long currentTime) {
+        RNCameraViewHelper.emitCameraUpdateEvent(cameraView);
+      }
+
+      @Override
       public void onMountError(CameraView cameraView) {
         RNCameraViewHelper.emitMountErrorEvent(cameraView, "Camera view threw an error - component could not be rendered.");
       }

@@ -19,6 +19,7 @@
 @property (nonatomic, strong) id textDetector;
 
 @property (nonatomic, copy) RCTDirectEventBlock onCameraReady;
+@property (nonatomic, copy) RCTDirectEventBlock onCameraUpdate;
 @property (nonatomic, copy) RCTDirectEventBlock onMountError;
 @property (nonatomic, copy) RCTDirectEventBlock onBarCodeRead;
 @property (nonatomic, copy) RCTDirectEventBlock onTextRecognized;
@@ -77,6 +78,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
     if (_onCameraReady) {
         _onCameraReady(nil);
+    }
+}
+
+- (void)onUpdate:(NSDictionary *)event
+{
+    if (_onCameraUpdate) {
+        _onCameraUpdate(nil);
     }
 }
 
@@ -577,6 +585,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
         NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
         [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
+        [NSTimer scheduledTimerWithTimeInterval:0.1f
+                                         target:self selector:@selector(onUpdate:) userInfo:nil repeats:YES];
         self.videoRecordedResolve = resolve;
         self.videoRecordedReject = reject;
     });

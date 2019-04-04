@@ -132,6 +132,7 @@ export interface RNCameraProps {
   whiteBalance?: keyof WhiteBalance;
 
   onCameraReady?(): void;
+  onCameraUpdate(): void;
   onMountError?(error: { message: string }): void;
 
   /** Value: float from 0 to 1.0 */

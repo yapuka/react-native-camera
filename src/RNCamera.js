@@ -84,6 +84,7 @@ type PropsType = typeof View.props & {
   focusDepth?: number,
   type?: number | string,
   onCameraReady?: Function,
+  onCameraUpdate?: Function,
   onBarCodeRead?: Function,
   onPictureSaved?: Function,
   onGoogleVisionBarcodesDetected?: Function,
@@ -201,6 +202,7 @@ export default class Camera extends React.Component<PropsType, StateType> {
     focusDepth: PropTypes.number,
     onMountError: PropTypes.func,
     onCameraReady: PropTypes.func,
+    onCameraUpdate: PropTypes.func,
     onBarCodeRead: PropTypes.func,
     onPictureSaved: PropTypes.func,
     onGoogleVisionBarcodesDetected: PropTypes.func,
@@ -375,6 +377,12 @@ export default class Camera extends React.Component<PropsType, StateType> {
     }
   };
 
+  _onCameraUpdate = () => {
+    if (this.props.onCameraUpdate) {
+      this.props.onCameraUpdate();
+    }
+  };
+
   _onPictureSaved = ({ nativeEvent }: EventCallbackArgumentsType) => {
     if (this.props.onPictureSaved) {
       this.props.onPictureSaved(nativeEvent);
@@ -458,6 +466,7 @@ export default class Camera extends React.Component<PropsType, StateType> {
             ref={this._setReference}
             onMountError={this._onMountError}
             onCameraReady={this._onCameraReady}
+            onCameraUpdate={this._onCameraUpdate}
             onGoogleVisionBarcodesDetected={this._onObjectDetected(
               this.props.onGoogleVisionBarcodesDetected,
             )}
@@ -529,6 +538,7 @@ const RNCamera = requireNativeComponent('RNCamera', Camera, {
     onBarCodeRead: true,
     onGoogleVisionBarcodesDetected: true,
     onCameraReady: true,
+    onCameraUpdate: true,
     onPictureSaved: true,
     onFaceDetected: true,
     onLayout: true,
